@@ -1,0 +1,36 @@
+<li>
+  <a href="{% url 'student_dashboard' %}" class="{% if active_page == 'dashboard' %}active{% endif %}">
+    <i class="fa-solid fa-house"></i>
+    Dashboard
+  </a>
+</li>
+<li>
+  <a href="{% url 'raise_complaint' %}" class="{% if active_page == 'raise' %}active{% endif %}">
+    <i class="fa-solid fa-file-circle-plus"></i>
+    Raise Complaint
+  </a>
+</li>
+<li>
+  <a href="{% url 'my_complaints' %}" class="{% if active_page == 'complaints' %}active{% endif %}">
+    <i class="fa-solid fa-list-check"></i>
+    My Complaints
+  </a>
+</li>
+<li>
+  <a href="{% url 'complaint_history' %}" class="{% if active_page == 'history' %}active{% endif %}">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    History
+  </a>
+</li>
+<li>
+  <a href="{% url 'landing' %}">
+    <i class="fa-solid fa-house"></i>
+    Home
+  </a>
+</li>
+<li>
+  <a href="{% url 'logout' %}">
+    <i class="fa-solid fa-right-from-bracket"></i>
+    Logout
+  </a>
+</li>

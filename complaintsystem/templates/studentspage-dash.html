@@ -1,0 +1,113 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Student Dashboard | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}Student Panel{% endblock %}
+{% block sidebar_nav %}
+  {% with active_page="dashboard" %}
+    {% include "_student_nav.html" %}
+  {% endwith %}
+{% endblock %}
+{% block topbar_title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">Welcome, {{ request.user.get_full_name|default:student.student_id }}</p>
+  <h2>Your Complaint Workspace</h2>
+  <p>Track active complaints, view routed departments, and keep up with staff updates.</p>
+</div>
+
+<div class="stats-grid">
+  <article class="stat-card">
+    <i class="fa-solid fa-file-circle-exclamation"></i>
+    <h3>{{ total_count }}</h3>
+    <p>Total Complaints</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-clock"></i>
+    <h3>{{ pending_count }}</h3>
+    <p>Pending</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-spinner"></i>
+    <h3>{{ progress_count }}</h3>
+    <p>In Progress</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-circle-check"></i>
+    <h3>{{ resolved_count }}</h3>
+    <p>Resolved</p>
+  </article>
+</div>
+
+<div class="quick-actions">
+  <a class="primary-btn" href="{% url 'raise_complaint' %}">
+    <i class="fa-solid fa-plus"></i>
+    Raise Complaint
+  </a>
+  <a class="secondary-btn" href="{% url 'my_complaints' %}">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    Track Complaint
+  </a>
+  <a class="secondary-btn" href="{% url 'complaint_history' %}">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    History
+  </a>
+</div>
+
+<div class="dashboard-grid">
+  <section class="panel">
+    <div class="panel-title">
+      <h3>Recent Complaints</h3>
+      <a href="{% url 'my_complaints' %}">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Complaint</th>
+            <th>Department</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for complaint in recent_complaints %}
+            <tr>
+              <td>{{ complaint.complaint_id }}</td>
+              <td><a class="table-link" href="{% url 'complaint_detail' complaint.complaint_id %}">{{ complaint.title }}</a></td>
+              <td>{{ complaint.department_name }}</td>
+              <td>{% include "_status_badge.html" %}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4">No complaints yet. Raise your first issue when something needs attention.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="panel-title">
+      <h3>Notifications</h3>
+    </div>
+    <div class="notification-list">
+      {% for notification in notifications %}
+        <div class="notification">
+          <i class="fa-solid fa-bell"></i>
+          <div>
+            <strong>{{ notification.message }}</strong>
+            <span class="muted">{{ notification.created_at|date:"M d, Y H:i" }}</span>
+          </div>
+        </div>
+      {% empty %}
+        <div class="empty-state compact">
+          <i class="fa-regular fa-bell"></i>
+          <p>No updates yet.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departments | Smart Complaint Routing System</title>
+  <style id="internal-app-css">
+    :root {
+      --bg:#0f1111; --surface:#171b1b; --surface-2:#202726; --line:#33403d;
+      --text:#f7f5ef; --muted:#aeb8b4; --teal:#18c5a6; --green:#44d07b;
+      --amber:#e9b44c; --teal-soft:rgba(24,197,166,.14); --shadow:0 22px 60px rgba(0,0,0,.35);
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; min-height:100vh; color:var(--text); font-family:"Segoe UI",Arial,sans-serif;
+      background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),var(--bg);
+      background-size:44px 44px;
+    }
+    a { color:inherit; text-decoration:none; }
+    .nav { position:sticky; top:0; z-index:20; display:flex; justify-content:space-between; align-items:center; gap:24px; padding:16px 7vw; background:rgba(15,17,17,.88); border-bottom:1px solid var(--line); backdrop-filter:blur(14px); }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:900; }
+    .brand-mark { display:grid; place-items:center; width:38px; height:38px; border-radius:8px; background:var(--teal); color:#061312; box-shadow:0 0 0 6px rgba(24,197,166,.1); }
+    .links { display:flex; align-items:center; flex-wrap:wrap; gap:22px; color:var(--muted); font-size:14px; font-weight:700; }
+    .links a { position:relative; display:inline-flex; align-items:center; min-height:36px; }
+    .links .active, .links a:hover { color:var(--text); }
+    .links .active::after { content:""; position:absolute; left:0; right:0; bottom:-9px; height:2px; border-radius:999px; background:var(--teal); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; border-radius:8px; border:1px solid transparent; padding:10px 16px; font-weight:800; background:var(--teal); color:#061312; }
+    .page { padding:54px 7vw 64px; }
+    .eyebrow { display:inline-flex; gap:8px; align-items:center; border:1px solid rgba(24,197,166,.32); border-radius:999px; background:var(--teal-soft); color:var(--teal); padding:8px 12px; font-size:13px; font-weight:900; text-transform:uppercase; }
+    .eyebrow::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--green); }
+    .hero { display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:28px; align-items:end; }
+    h1 { max-width:780px; margin:16px 0 0; font-size:clamp(40px,6vw,68px); line-height:1; letter-spacing:0; }
+    h1 span { color:var(--teal); }
+    p { color:var(--muted); line-height:1.7; }
+    .summary-card, .department-card, .rule-card { border:1px solid var(--line); border-radius:8px; background:rgba(23,27,27,.94); box-shadow:var(--shadow); }
+    .summary-card { padding:22px; display:grid; gap:14px; }
+    .summary-row { display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); padding-bottom:12px; }
+    .summary-row:last-child { border-bottom:0; padding-bottom:0; }
+    .summary-row span { color:var(--muted); font-weight:700; }
+    .summary-row strong { font-size:24px; }
+    .section { padding-top:42px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:20px; }
+    .section-head h2 { margin:0; font-size:34px; }
+    .department-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .department-card { padding:22px; min-height:240px; transition:transform .2s ease,border-color .2s ease; }
+    .department-card:hover { transform:translateY(-4px); border-color:rgba(24,197,166,.68); }
+    .badge { display:grid; place-items:center; width:42px; height:42px; border-radius:8px; background:var(--teal-soft); color:var(--teal); font-weight:900; }
+    .department-card h3 { margin:18px 0 10px; font-size:22px; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+    .meta span { border:1px solid var(--line); border-radius:999px; background:var(--surface-2); color:var(--muted); padding:7px 10px; font-size:12px; font-weight:800; }
+    .rule-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .rule-card { padding:18px; }
+    .rule-card strong { display:block; margin-bottom:8px; color:var(--teal); }
+    @media (max-width:1050px) { .hero { grid-template-columns:1fr; } .department-grid,.rule-grid { grid-template-columns:1fr; } }
+    @media (max-width:760px) { .nav { align-items:flex-start; flex-direction:column; padding:14px 20px; } .page { padding:36px 20px 44px; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="index.html" data-django-href="/index.html"><span class="brand-mark">S</span><span>Smart Complaint Routing</span></a>
+    <div class="links">
+      <a href="index.html" data-django-href="/index.html">Home</a>
+      <a class="active" href="departments.html" data-django-href="/departments.html">Departments</a>
+      <a href="support.html" data-django-href="/support.html">Support</a>
+      <a class="btn" href="login.html" data-django-href="/login.html">Login</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Routing directory</span>
+        <h1>Departments that keep campus <span>operations moving</span>.</h1>
+        <p>Each complaint category is connected to a responsible team. When staff and departments are added in Django, this page updates from the database.</p>
+      </div>
+      <aside class="summary-card">
+        <div class="summary-row"><span>Departments</span><strong data-live-value="{{ department_count|default:6 }}">6</strong></div>
+        <div class="summary-row"><span>Staff members</span><strong data-live-value="{{ staff_count|default:0 }}">0</strong></div>
+        <div class="summary-row"><span>Total complaints</span><strong data-live-value="{{ total_count|default:0 }}">0</strong></div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Department Workloads</h2>
+          <p>Live staffing and routed complaint counts are shown when served through Django.</p>
+        </div>
+      </div>
+
+      <div class="department-grid" id="departmentGrid">
+        <article class="department-card"><span class="badge">H</span><h3>Hostel Department</h3><p>Hostel rooms, water, cleanliness, power, and resident facilities.</p><div class="meta"><span>Hostel</span><span>0 staff</span><span>0 complaints</span></div></article>
+        <article class="department-card"><span class="badge">IT</span><h3>IT Department</h3><p>WiFi, computer labs, systems, account access, and network support.</p><div class="meta"><span>IT Support</span><span>0 staff</span><span>0 complaints</span></div></article>
+        <article class="department-card"><span class="badge">M</span><h3>Maintenance Team</h3><p>Classrooms, electrical faults, plumbing, repairs, and infrastructure.</p><div class="meta"><span>Maintenance, Classroom</span><span>0 staff</span><span>0 complaints</span></div></article>
+      </div>
+
+      <template id="serverDepartments">
+        {% for department in department_cards %}
+          <article class="department-card">
+            <span class="badge">{{ department.initial }}</span>
+            <h3>{{ department.name }}</h3>
+            <p>{{ department.description }}</p>
+            <div class="meta">
+              <span>{{ department.categories }}</span>
+              <span>{{ department.staff_count }} staff</span>
+              <span>{{ department.complaint_count }} complaints</span>
+            </div>
+          </article>
+        {% endfor %}
+      </template>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Useful Routing Notes</h2>
+          <p>Admins can reassign complaints manually if the automatic category route needs correction.</p>
+        </div>
+      </div>
+      <div class="rule-grid">
+        <div class="rule-card"><strong>Auto routing</strong><p>Category selection decides the first department assignment.</p></div>
+        <div class="rule-card"><strong>Staff updates</strong><p>Assigned staff can add remarks and move status through the flow.</p></div>
+        <div class="rule-card"><strong>Admin control</strong><p>Admins can create departments, create staff, and reassign complaints.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    if (location.port !== "5500") {
+      document.querySelectorAll("[data-django-href]").forEach((link) => link.setAttribute("href", link.dataset.djangoHref));
+      document.querySelectorAll("[data-live-value]").forEach((node) => {
+        const value = node.dataset.liveValue;
+        if (value && !value.includes("{")) node.textContent = value;
+      });
+      const serverDepartments = document.getElementById("serverDepartments");
+      const departmentGrid = document.getElementById("departmentGrid");
+      if (serverDepartments && departmentGrid && !serverDepartments.innerHTML.includes("{%")) {
+        departmentGrid.innerHTML = serverDepartments.innerHTML;
+      }
+    }
+  </script>
+</body>
+</html>

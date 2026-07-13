@@ -1,0 +1,83 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}My Complaints | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}Student Panel{% endblock %}
+{% block sidebar_nav %}
+  {% with active_page="complaints" %}
+    {% include "_student_nav.html" %}
+  {% endwith %}
+{% endblock %}
+{% block topbar_title %}My Complaints{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">Tracking board</p>
+  <h2>My Complaints</h2>
+  <p>Search, filter, and follow each complaint through the status flow.</p>
+</div>
+
+<form class="filter-bar" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search by title, ID, category, or details">
+  <select name="status">
+    <option value="all" {% if selected_status == "all" %}selected{% endif %}>All Statuses</option>
+    {% for value, label in status_choices %}
+      <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button class="primary-btn" type="submit">
+    <i class="fa-solid fa-filter"></i>
+    Filter
+  </button>
+  <a class="secondary-btn" href="{% url 'my_complaints' %}">
+    <i class="fa-solid fa-rotate-left"></i>
+    Reset
+  </a>
+</form>
+
+<div class="complaint-grid">
+  {% for complaint in complaints %}
+    <article class="complaint-card">
+      <div class="card-top">
+        <span class="complaint-id">{{ complaint.complaint_id }}</span>
+        {% include "_status_badge.html" %}
+      </div>
+      <h3>{{ complaint.title }}</h3>
+      <p>{{ complaint.description|truncatechars:150 }}</p>
+      <div class="meta-row">
+        <span><i class="fa-solid fa-layer-group"></i> {{ complaint.category }}</span>
+        <span><i class="fa-solid fa-building"></i> {{ complaint.department_name }}</span>
+        <span><i class="fa-solid fa-flag"></i> {{ complaint.priority }}</span>
+        <span><i class="fa-regular fa-calendar"></i> {{ complaint.created_at|date:"M d, Y" }}</span>
+      </div>
+      <div class="progress-block">
+        <div class="progress-title">
+          <span>Progress</span>
+          <span>{{ complaint.progress_percent }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ complaint.progress_percent }}%;"></div>
+        </div>
+      </div>
+      <div class="button-row">
+        <a class="primary-btn small" href="{% url 'complaint_detail' complaint.complaint_id %}">
+          <i class="fa-solid fa-eye"></i>
+          Details
+        </a>
+        {% if complaint.attachment %}
+          <a class="secondary-btn small" href="{{ complaint.attachment.url }}">
+            <i class="fa-solid fa-paperclip"></i>
+            Attachment
+          </a>
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <div class="empty-state">
+      <i class="fa-regular fa-folder-open"></i>
+      <h3>No complaints found</h3>
+      <p>Try a different filter or raise a new complaint.</p>
+      <a class="primary-btn" href="{% url 'raise_complaint' %}">Raise Complaint</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

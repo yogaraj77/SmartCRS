@@ -1,0 +1,248 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Admin Dashboard | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}Admin Panel{% endblock %}
+{% block sidebar_nav %}{% include "_admin_nav.html" %}{% endblock %}
+{% block topbar_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">College operations</p>
+  <h2>Complaint Analytics And Management</h2>
+  <p>Manage departments, staff, students, and complaint assignment from one dashboard.</p>
+</div>
+
+<div class="stats-grid">
+  <article class="stat-card">
+    <i class="fa-solid fa-layer-group"></i>
+    <h3>{{ total_count }}</h3>
+    <p>Total Complaints</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-clock"></i>
+    <h3>{{ pending_count }}</h3>
+    <p>Pending</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-share-nodes"></i>
+    <h3>{{ assigned_count }}</h3>
+    <p>Assigned</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-circle-check"></i>
+    <h3>{{ resolved_count }}</h3>
+    <p>Resolved</p>
+  </article>
+</div>
+
+<div class="dashboard-grid admin-grid">
+  <section class="panel">
+    <div class="panel-title">
+      <h3>Add Department</h3>
+    </div>
+    <form class="form-stack" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_department">
+      <label>
+        Department Name
+        {{ department_form.name }}
+      </label>
+      <label>
+        Description
+        {{ department_form.description }}
+      </label>
+      <button class="primary-btn" type="submit">
+        <i class="fa-solid fa-building-circle-plus"></i>
+        Save Department
+      </button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title">
+      <h3>Create Staff</h3>
+    </div>
+    <form class="form-grid" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create_staff">
+      <label>
+        Staff ID
+        {{ staff_form.staff_id }}
+      </label>
+      <label>
+        Full Name
+        {{ staff_form.full_name }}
+      </label>
+      <label class="span-2">
+        Email
+        {{ staff_form.email }}
+      </label>
+      <label>
+        Password
+        {{ staff_form.password }}
+      </label>
+      <label>
+        Department
+        {{ staff_form.department }}
+      </label>
+      <button class="primary-btn span-2" type="submit">
+        <i class="fa-solid fa-user-plus"></i>
+        Create Staff
+      </button>
+    </form>
+  </section>
+</div>
+
+<section class="panel">
+  <div class="panel-title">
+    <h3>All Complaints</h3>
+  </div>
+  <form class="filter-bar" method="get">
+    <input type="search" name="q" value="{{ search }}" placeholder="Search complaints, students, staff, or categories">
+    <select name="status">
+      <option value="all" {% if selected_status == "all" %}selected{% endif %}>All Statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="primary-btn" type="submit">
+      <i class="fa-solid fa-filter"></i>
+      Filter
+    </button>
+    <a class="secondary-btn" href="{% url 'admin_dashboard' %}">
+      <i class="fa-solid fa-rotate-left"></i>
+      Reset
+    </a>
+  </form>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Complaint</th>
+          <th>Student</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Assign/Reassign</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for complaint in complaints %}
+          <tr>
+            <td>{{ complaint.complaint_id }}</td>
+            <td><a class="table-link" href="{% url 'complaint_detail' complaint.complaint_id %}">{{ complaint.title }}</a></td>
+            <td>{{ complaint.student.student_id }}</td>
+            <td>{{ complaint.department_name }}</td>
+            <td>{% include "_status_badge.html" %}</td>
+            <td>
+              <form class="inline-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="assign_complaint">
+                <input type="hidden" name="complaint_pk" value="{{ complaint.pk }}">
+                <select name="staff_pk" aria-label="Assign staff">
+                  {% for staff in staff_members %}
+                    <option value="{{ staff.pk }}" {% if complaint.assigned_to_id == staff.pk %}selected{% endif %}>
+                      {{ staff.staff_id }} - {{ staff.department.name|default:"No Department" }}
+                    </option>
+                  {% endfor %}
+                </select>
+                <button class="secondary-btn small" type="submit">Assign</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6">No complaints match this filter.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="dashboard-grid admin-grid">
+  <section class="panel">
+    <div class="panel-title">
+      <h3>Staff Members</h3>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Staff</th>
+            <th>Department</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for staff in staff_members %}
+            <tr>
+              <td>{{ staff.staff_id }}<br><span class="muted">{{ staff.user.get_full_name|default:staff.user.username }}</span></td>
+              <td>{{ staff.department.name|default:"No Department" }}</td>
+              <td>
+                <form class="inline-form" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="assign_staff">
+                  <input type="hidden" name="staff_pk" value="{{ staff.pk }}">
+                  <select name="department_pk" aria-label="Staff department">
+                    {% for department in departments %}
+                      <option value="{{ department.pk }}" {% if staff.department_id == department.pk %}selected{% endif %}>{{ department.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <button class="secondary-btn small" type="submit">Save</button>
+                </form>
+                <form class="inline-delete" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete_staff">
+                  <input type="hidden" name="staff_pk" value="{{ staff.pk }}">
+                  <button class="danger-btn" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3">No staff created yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title">
+      <h3>Students And Departments</h3>
+    </div>
+    <div class="management-list">
+      <h4>Students</h4>
+      {% for student in students %}
+        <div class="management-row">
+          <span>{{ student.student_id }} - {{ student.user.get_full_name|default:student.user.username }}</span>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_student">
+            <input type="hidden" name="student_pk" value="{{ student.pk }}">
+            <button class="danger-btn" type="submit">Delete</button>
+          </form>
+        </div>
+      {% empty %}
+        <p class="muted">No students registered yet.</p>
+      {% endfor %}
+
+      <h4>Departments</h4>
+      {% for department in departments %}
+        <div class="management-row">
+          <span>{{ department.name }}</span>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_department">
+            <input type="hidden" name="department_pk" value="{{ department.pk }}">
+            <button class="danger-btn" type="submit">Delete</button>
+          </form>
+        </div>
+      {% empty %}
+        <p class="muted">No departments configured.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

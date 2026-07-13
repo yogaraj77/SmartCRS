@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Registration | Smart Complaint Routing System{% endblock %}
+
+{% block body %}
+<main class="auth-page">
+  <section class="auth-card wide-auth">
+    <a class="back-link" href="{% url 'login' %}">
+      <i class="fa-solid fa-arrow-left"></i>
+      Back to Login
+    </a>
+
+    <div class="auth-heading">
+      <i class="fa-solid fa-user-shield"></i>
+      <h1>Admin Registration</h1>
+      <p>Use the college admin key to create an administrator account.</p>
+    </div>
+
+    <form class="form-grid" method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors span-2">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in form %}
+        <label {% if field.name == "email" or field.name == "admin_key" %}class="span-2"{% endif %}>
+          {{ field.label }}
+          {{ field }}
+          {% if field.errors %}<span class="field-error">{{ field.errors|striptags }}</span>{% endif %}
+        </label>
+      {% endfor %}
+      <div class="form-actions span-2">
+        <button class="primary-btn full-width" type="submit">
+          <i class="fa-solid fa-key"></i>
+          Create Admin Account
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

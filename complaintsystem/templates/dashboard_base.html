@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <h2>{% block sidebar_title %}Dashboard{% endblock %}</h2>
+    <ul class="menu">
+      {% block sidebar_nav %}{% endblock %}
+    </ul>
+  </aside>
+
+  <main class="workspace">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn" id="menuBtn" type="button" aria-label="Toggle navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h1>{% block topbar_title %}Dashboard{% endblock %}</h1>
+      </div>
+
+      <div class="profile" id="profile">
+        <button class="profile-chip" type="button">
+          <i class="fa-solid fa-user"></i>
+          <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+        </button>
+        <div class="dropdown" id="dropdown">
+          <a href="{% url 'role_redirect' %}">Dashboard</a>
+          <a href="{% url 'landing' %}">Home</a>
+          <a href="{% url 'logout' %}">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+</div>
+{% endblock %}

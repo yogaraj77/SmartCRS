@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+
+newpj/
+venv/
+env/
+.venv/
+
+db.sqlite3
+media/
+staticfiles/
+
+.env
+
+.vscode/
+.idea/

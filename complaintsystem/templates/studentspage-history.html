@@ -1,0 +1,77 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Complaint History | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}Student Panel{% endblock %}
+{% block sidebar_nav %}
+  {% with active_page="history" %}
+    {% include "_student_nav.html" %}
+  {% endwith %}
+{% endblock %}
+{% block topbar_title %}Complaint History{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">Resolved archive</p>
+  <h2>Complaint History</h2>
+  <p>Review resolved complaints, timelines, remarks, and evidence from past work.</p>
+</div>
+
+<div class="stats-grid compact">
+  <article class="stat-card">
+    <i class="fa-solid fa-circle-check"></i>
+    <h3>{{ resolved_count }}</h3>
+    <p>Resolved Complaints</p>
+  </article>
+</div>
+
+<form class="filter-bar compact-filter" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search resolved complaints">
+  <button class="primary-btn" type="submit">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    Search
+  </button>
+  <a class="secondary-btn" href="{% url 'complaint_history' %}">
+    <i class="fa-solid fa-rotate-left"></i>
+    Reset
+  </a>
+</form>
+
+<div class="card-grid">
+  {% for complaint in complaints %}
+    <article class="complaint-card">
+      <div class="card-top">
+        <span class="complaint-id">{{ complaint.complaint_id }}</span>
+        {% include "_status_badge.html" %}
+      </div>
+      <h3>{{ complaint.title }}</h3>
+      <p>{{ complaint.description }}</p>
+      <div class="meta-row">
+        <span>{{ complaint.category }}</span>
+        <span>{{ complaint.department_name }}</span>
+        <span>Submitted {{ complaint.created_at|date:"M d, Y" }}</span>
+        {% if complaint.resolved_at %}
+          <span>Resolved {{ complaint.resolved_at|date:"M d, Y" }}</span>
+        {% endif %}
+      </div>
+      <div class="timeline-grid small">
+        <div class="timeline-item">Pending</div>
+        <div class="timeline-item">Assigned</div>
+        <div class="timeline-item">In Progress</div>
+        <div class="timeline-item">Resolved</div>
+      </div>
+      <div class="button-row">
+        <a class="primary-btn small" href="{% url 'complaint_detail' complaint.complaint_id %}">
+          <i class="fa-solid fa-file-lines"></i>
+          View Report
+        </a>
+      </div>
+    </article>
+  {% empty %}
+    <div class="empty-state">
+      <i class="fa-solid fa-box-archive"></i>
+      <h3>No resolved complaints yet</h3>
+      <p>Resolved complaints will appear here automatically.</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

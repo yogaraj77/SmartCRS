@@ -1,0 +1,94 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Raise Complaint | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}Student Panel{% endblock %}
+{% block sidebar_nav %}
+  {% with active_page="raise" %}
+    {% include "_student_nav.html" %}
+  {% endwith %}
+{% endblock %}
+{% block topbar_title %}Raise Complaint{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">New complaint</p>
+  <h2>Raise a Complaint</h2>
+  <p>Submit the issue once. The selected category routes it to the responsible department automatically.</p>
+</div>
+
+<div class="content-grid">
+  <section class="panel">
+    <form class="form-grid" id="complaintForm" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors span-2">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <label>
+        Complaint Title
+        {{ form.title }}
+        {% if form.title.errors %}<span class="field-error">{{ form.title.errors|striptags }}</span>{% endif %}
+      </label>
+
+      <label>
+        Complaint Category
+        {{ form.category }}
+        {% if form.category.errors %}<span class="field-error">{{ form.category.errors|striptags }}</span>{% endif %}
+      </label>
+
+      <label>
+        Priority
+        {{ form.priority }}
+        {% if form.priority.errors %}<span class="field-error">{{ form.priority.errors|striptags }}</span>{% endif %}
+      </label>
+
+      <label>
+        Supporting File or Image
+        {{ form.attachment }}
+        {% if form.attachment.errors %}<span class="field-error">{{ form.attachment.errors|striptags }}</span>{% endif %}
+      </label>
+
+      <label class="span-2">
+        Description
+        <textarea id="descriptionInput" name="description" rows="5" maxlength="500" required>{{ form.description.value|default:'' }}</textarea>
+        <span class="field-help"><span id="charCount">0</span> / 500 characters</span>
+        {% if form.description.errors %}<span class="field-error">{{ form.description.errors|striptags }}</span>{% endif %}
+      </label>
+
+      <div class="span-2">
+        <div class="tag-row" aria-label="Quick issue tags">
+          <button class="tag" type="button" data-tag="Internet not working">Internet</button>
+          <button class="tag" type="button" data-tag="Water leakage">Water</button>
+          <button class="tag" type="button" data-tag="Electrical fault">Electricity</button>
+          <button class="tag" type="button" data-tag="Classroom equipment issue">Classroom</button>
+          <button class="tag" type="button" data-tag="Cleanliness issue">Cleanliness</button>
+        </div>
+      </div>
+
+      <div class="form-actions span-2">
+        <button class="primary-btn" type="submit">
+          <i class="fa-solid fa-paper-plane"></i>
+          Submit Complaint
+        </button>
+        <button class="secondary-btn" id="draftBtn" type="button">
+          <i class="fa-solid fa-floppy-disk"></i>
+          Save Draft
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="panel">
+    <div class="panel-title">
+      <h3>Routing Rules</h3>
+    </div>
+    <ul class="rule-list">
+      <li><strong>Hostel</strong><span>Hostel Department</span></li>
+      <li><strong>IT Support</strong><span>IT Department</span></li>
+      <li><strong>Transport</strong><span>Transport Department</span></li>
+      <li><strong>Library</strong><span>Library Staff</span></li>
+      <li><strong>Maintenance/Classroom</strong><span>Maintenance Team</span></li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}

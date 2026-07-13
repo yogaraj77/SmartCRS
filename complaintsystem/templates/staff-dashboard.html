@@ -1,0 +1,125 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Staff Dashboard | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}Staff Panel{% endblock %}
+{% block sidebar_nav %}{% include "_staff_nav.html" %}{% endblock %}
+{% block topbar_title %}Staff Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">{{ staff.department.name|default:"No Department Assigned" }}</p>
+  <h2>Assigned Department Complaints</h2>
+  <p>Update status, add remarks, and mark complaints resolved when the work is complete.</p>
+</div>
+
+<div class="stats-grid">
+  <article class="stat-card">
+    <i class="fa-solid fa-list-check"></i>
+    <h3>{{ total_count }}</h3>
+    <p>Total</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-clock"></i>
+    <h3>{{ pending_count }}</h3>
+    <p>Pending</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-share-nodes"></i>
+    <h3>{{ assigned_count }}</h3>
+    <p>Assigned</p>
+  </article>
+  <article class="stat-card">
+    <i class="fa-solid fa-circle-check"></i>
+    <h3>{{ resolved_count }}</h3>
+    <p>Resolved</p>
+  </article>
+</div>
+
+<form class="filter-bar" method="get">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search by complaint, student ID, or details">
+  <select name="status">
+    <option value="all" {% if selected_status == "all" %}selected{% endif %}>All Statuses</option>
+    {% for value, label in status_choices %}
+      <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button class="primary-btn" type="submit">
+    <i class="fa-solid fa-filter"></i>
+    Filter
+  </button>
+  <a class="secondary-btn" href="{% url 'staff_dashboard' %}">
+    <i class="fa-solid fa-rotate-left"></i>
+    Reset
+  </a>
+</form>
+
+<div class="complaint-grid">
+  {% for complaint in complaints %}
+    <article class="complaint-card">
+      <div class="card-top">
+        <span class="complaint-id">{{ complaint.complaint_id }}</span>
+        {% include "_status_badge.html" %}
+      </div>
+      <h3>{{ complaint.title }}</h3>
+      <p>{{ complaint.description|truncatechars:180 }}</p>
+      <div class="meta-row">
+        <span>Student: {{ complaint.student.student_id }}</span>
+        <span>{{ complaint.category }}</span>
+        <span>{{ complaint.priority }} Priority</span>
+        <span>{{ complaint.created_at|date:"M d, Y H:i" }}</span>
+      </div>
+      <div class="progress-block">
+        <div class="progress-title">
+          <span>Progress</span>
+          <span>{{ complaint.progress_percent }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ complaint.progress_percent }}%;"></div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <a class="secondary-btn small" href="{% url 'complaint_detail' complaint.complaint_id %}">
+          <i class="fa-solid fa-eye"></i>
+          Details
+        </a>
+        {% if complaint.attachment %}
+          <a class="secondary-btn small" href="{{ complaint.attachment.url }}">
+            <i class="fa-solid fa-paperclip"></i>
+            File
+          </a>
+        {% endif %}
+      </div>
+
+      {% if complaint.status != "Resolved" %}
+        <form class="staff-update-form" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="complaint_pk" value="{{ complaint.pk }}">
+          <label>
+            Update Status
+            <select name="status" required>
+              <option value="Assigned" {% if complaint.status == "Assigned" %}selected{% endif %}>Assigned</option>
+              <option value="In Progress" {% if complaint.status == "In Progress" %}selected{% endif %}>In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </label>
+          <label>
+            Remark
+            <textarea name="remark" rows="3" placeholder="Add work note, resolution detail, or next action"></textarea>
+          </label>
+          <button class="primary-btn" type="submit">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Save Update
+          </button>
+        </form>
+      {% endif %}
+    </article>
+  {% empty %}
+    <div class="empty-state">
+      <i class="fa-regular fa-folder-open"></i>
+      <h3>No assigned complaints</h3>
+      <p>New complaints routed to your department will appear here.</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

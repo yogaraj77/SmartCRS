@@ -1,0 +1,97 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Complaint {{ complaint.complaint_id }} | Smart Complaint Routing System{% endblock %}
+{% block sidebar_title %}
+  {% if request.user.is_staff %}Admin Panel{% elif request.user.staff_profile %}Staff Panel{% else %}Student Panel{% endif %}
+{% endblock %}
+{% block sidebar_nav %}
+  {% if request.user.is_staff %}
+    {% include "_admin_nav.html" %}
+  {% elif request.user.staff_profile %}
+    {% include "_staff_nav.html" %}
+  {% else %}
+    {% with active_page="complaints" %}
+      {% include "_student_nav.html" %}
+    {% endwith %}
+  {% endif %}
+{% endblock %}
+{% block topbar_title %}Complaint Details{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <p class="eyebrow">{{ complaint.complaint_id }}</p>
+  <h2>{{ complaint.title }}</h2>
+  <p>{{ complaint.category }} complaint routed to {{ complaint.department_name }}.</p>
+</div>
+
+<div class="content-grid">
+  <section class="panel">
+    <div class="panel-title">
+      <h3>Complaint Overview</h3>
+      {% include "_status_badge.html" %}
+    </div>
+    <div class="detail-list">
+      <p><strong>Student:</strong> {{ complaint.student.student_id }} - {{ complaint.student.user.get_full_name|default:complaint.student.user.username }}</p>
+      <p><strong>Priority:</strong> {{ complaint.priority }}</p>
+      <p><strong>Assigned Staff:</strong> {{ complaint.assigned_to.staff_id|default:"Waiting for assignment" }}</p>
+      <p><strong>Created:</strong> {{ complaint.created_at|date:"M d, Y H:i" }}</p>
+      <p><strong>Updated:</strong> {{ complaint.updated_at|date:"M d, Y H:i" }}</p>
+      {% if complaint.resolved_at %}
+        <p><strong>Resolved:</strong> {{ complaint.resolved_at|date:"M d, Y H:i" }}</p>
+      {% endif %}
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-title">
+        <span>Status Progress</span>
+        <span>{{ complaint.progress_percent }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ complaint.progress_percent }}%;"></div>
+      </div>
+    </div>
+
+    <h4>Description</h4>
+    <p class="detail-description">{{ complaint.description }}</p>
+
+    {% if complaint.attachment %}
+      <a class="secondary-btn" href="{{ complaint.attachment.url }}">
+        <i class="fa-solid fa-paperclip"></i>
+        Open Attachment
+      </a>
+    {% endif %}
+  </section>
+
+  <aside class="panel">
+    <div class="panel-title">
+      <h3>Status Timeline</h3>
+    </div>
+    <div class="timeline-list">
+      {% for status in complaint.status_history.all %}
+        <div class="timeline-card">
+          <strong>{{ status.status }}</strong>
+          <span>{{ status.created_at|date:"M d, Y H:i" }} by {{ status.updated_by.get_full_name|default:status.updated_by.username|default:"System" }}</span>
+          {% if status.remark %}<p>{{ status.remark }}</p>{% endif %}
+        </div>
+      {% empty %}
+        <p class="muted">No timeline entries yet.</p>
+      {% endfor %}
+    </div>
+  </aside>
+</div>
+
+<section class="panel">
+  <div class="panel-title">
+    <h3>Staff Remarks</h3>
+  </div>
+  {% for remark in complaint.remarks.all %}
+    <div class="remark">
+      <strong>{{ remark.staff.staff_id|default:"Staff" }}</strong>
+      <span>{{ remark.created_at|date:"M d, Y H:i" }}</span>
+      <p>{{ remark.remark }}</p>
+    </div>
+  {% empty %}
+    <p class="muted">No remarks have been added yet.</p>
+  {% endfor %}
+</section>
+{% endblock %}

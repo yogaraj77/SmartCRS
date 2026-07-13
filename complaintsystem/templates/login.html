@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Smart Complaint Routing System</title>
+  <style id="internal-app-css">
+    :root {
+      --bg: #101214;
+      --surface: #181c20;
+      --surface-2: #20262c;
+      --line: #303840;
+      --text: #f6f7f9;
+      --muted: #a8b0b9;
+      --teal: #14b8a6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 30px 16px;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(20, 184, 166, 0.2), transparent 26%),
+        radial-gradient(circle at 85% 82%, rgba(245, 158, 11, 0.14), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    input,
+    button {
+      width: 100%;
+      font: inherit;
+    }
+
+    .auth-shell {
+      width: min(980px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 460px;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .side-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(20, 184, 166, 0.14), rgba(24, 28, 32, 0.96));
+      box-shadow: var(--shadow);
+      padding: 30px;
+      display: grid;
+      align-content: space-between;
+      min-height: 540px;
+    }
+
+    .side-panel h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.05;
+    }
+
+    .side-panel h2 span { color: var(--teal); }
+
+    .access-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .access-item {
+      border: 1px solid rgba(246, 247, 249, 0.1);
+      border-radius: 8px;
+      background: rgba(16, 18, 20, 0.48);
+      padding: 14px;
+    }
+
+    .access-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .card {
+      width: min(460px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .heading {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      border-radius: 8px;
+      background: var(--teal);
+      color: #061312;
+      font-weight: 900;
+    }
+
+    h1 { margin: 0 0 6px; }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .role-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .role-tabs input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .role-tabs span {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .role-tabs input:checked + span {
+      background: var(--teal);
+      color: #061312;
+      border-color: var(--teal);
+    }
+
+    label.field {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0d0f11;
+      color: var(--text);
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+    }
+
+    .btn {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--teal);
+      color: #061312;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--teal);
+      font-weight: 800;
+    }
+
+    .preview-note {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid rgba(20, 184, 166, 0.35);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--green);
+      background: rgba(20, 184, 166, 0.08);
+      font-size: 13px;
+    }
+
+    .message-stack {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 20;
+      display: grid;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 360px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--teal);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .message.error { border-left-color: var(--red); }
+    .message.success { border-left-color: var(--green); }
+
+    @media (max-width: 900px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .side-panel { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-shell">
+  <aside class="side-panel">
+    <div>
+      <p>Secure college operations</p>
+      <h2>One login for every <span>complaint workflow</span>.</h2>
+    </div>
+    <div class="access-list">
+      <div class="access-item">
+        <strong>Students</strong>
+        <p>Raise complaints, upload evidence, and track progress.</p>
+      </div>
+      <div class="access-item">
+        <strong>Staff</strong>
+        <p>Update assigned department work with remarks.</p>
+      </div>
+      <div class="access-item">
+        <strong>Admins</strong>
+        <p>Manage routing, departments, staff, and analytics.</p>
+      </div>
+    </div>
+  </aside>
+
+  <main class="card">
+    <a class="back-link" href="index.html" data-django-href="/index.html">Back Home</a>
+
+    <div class="heading">
+      <div class="mark">S</div>
+      <h1>Welcome Back</h1>
+      <p>Choose your role and continue to the correct dashboard.</p>
+    </div>
+
+    <form class="form" id="loginForm" method="post" action="/login/">
+      <span style="display:none">{% csrf_token %}</span>
+
+      <div class="role-tabs">
+        <label>
+          <input type="radio" name="role" value="student" checked>
+          <span>Student</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="staff">
+          <span>Staff</span>
+        </label>
+        <label>
+          <input type="radio" name="role" value="admin">
+          <span>Admin</span>
+        </label>
+      </div>
+
+      <label class="field">
+        User ID
+        <input type="text" name="user_id" placeholder="Enter Student ID" required>
+      </label>
+
+      <label class="field">
+        Password
+        <input type="password" name="password" placeholder="Enter password" required>
+      </label>
+
+      <button class="btn" type="submit">Login</button>
+    </form>
+
+    <p class="footer">
+      New here?
+      <a id="signupLink" href="register.html" data-django-href="/register.html">Create an account</a>
+    </p>
+
+    <div class="preview-note" id="previewNote">
+      Go Live preview is showing the UI only. Use Django runserver on port 8000 for real login.
+    </div>
+  </main>
+  </div>
+
+  <script>
+    if (location.port !== "5500") {
+      document.querySelectorAll("[data-django-href]").forEach((link) => {
+        link.setAttribute("href", link.dataset.djangoHref);
+      });
+    }
+
+    const loginForm = document.getElementById("loginForm");
+    const userIdInput = loginForm.querySelector('input[name="user_id"]');
+    const roleInputs = loginForm.querySelectorAll('input[name="role"]');
+    const signupLink = document.getElementById("signupLink");
+    const previewNote = document.getElementById("previewNote");
+
+    const placeholders = {
+      student: "Enter Student ID",
+      staff: "Enter Faculty ID",
+      admin: "Enter Admin Username",
+    };
+
+    const signupLinks = {
+      student: "register.html",
+      staff: "faculty-register.html",
+      admin: "admin-register.html",
+    };
+
+    const djangoSignupLinks = {
+      student: "/register.html",
+      staff: "/faculty-register.html",
+      admin: "/admin-register.html",
+    };
+
+    roleInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        userIdInput.placeholder = placeholders[input.value] || "Enter User ID";
+        signupLink.href = location.port === "5500"
+          ? signupLinks[input.value] || "register.html"
+          : djangoSignupLinks[input.value] || "/register.html";
+      });
+    });
+
+    if (location.port === "5500") {
+      previewNote.style.display = "block";
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        previewNote.textContent = "This page is styled in Go Live. Start Django with python manage.py runserver for real login.";
+      });
+    }
+  </script>
+</body>
+</html>
