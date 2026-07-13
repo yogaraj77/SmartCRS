@@ -1,16 +1,24 @@
 __pycache__/
 *.py[cod]
+*$py.class
 
-newpj/
+.Python
 venv/
 env/
 .venv/
+ENV/
 
 db.sqlite3
+*.sqlite3
 media/
 staticfiles/
 
 .env
+.env.*
+
+.coverage
+htmlcov/
+*.log
 
 .vscode/
 .idea/
